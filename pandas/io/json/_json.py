@@ -302,12 +302,10 @@ class JSONTableWriter(FrameWriter):
         # Convert PeriodIndex to datetimes before serializing
         if is_period_dtype(obj.index.dtype):
             obj.index = obj.index.to_timestamp()
+        # Exclude index from obj if index=False
+        obj.reset_index(drop=not self.index, inplace=True)
 
-        # exclude index from obj if index=False
-        if not self.index:
-            self.obj = obj.reset_index(drop=True)
-        else:
-            self.obj = obj.reset_index(drop=False)
+        self.obj = obj
         self.date_format = "iso"
         self.orient = "records"
         self.index = index
